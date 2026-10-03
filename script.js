@@ -3554,11 +3554,12 @@ function adminDeleteUser(userId) {
 
 
 /* =========================================================
-   2026 PREMIUM UPGRADE — SIGNATURE CONCEPTS CMS
-   Stores six optimized images in localStorage to match the
-   existing static CMS architecture.
+   2026 PREMIUM UPGRADE — SIGNATURE CONCEPT ALBUMS CMS
+   Keeps backward compatibility with the former one-image
+   format while allowing an album for every concept.
 ========================================================= */
 const CONCEPT_IMAGE_KEY = "lauraStudioConceptImages";
+const MAX_CONCEPT_PHOTOS = 20;
 const CONCEPT_CATALOG = [
   { id: "angelic", title: "Angelic / Ethereal", label: "Thiên thần / Thần thoại" },
   { id: "dark-gothic", title: "Dark / Gothic", label: "Bóng tối / Huyền bí" },
@@ -3571,7 +3572,16 @@ const CONCEPT_CATALOG = [
 function getConceptImages() {
   try {
     const value = JSON.parse(localStorage.getItem(CONCEPT_IMAGE_KEY) || "{}");
-    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+
+    return Object.fromEntries(Object.entries(value).map(([id, entry]) => {
+      const images = Array.isArray(entry?.images)
+        ? entry.images.filter(source => typeof source === "string" && source.trim())
+        : typeof entry?.image === "string" && entry.image.trim()
+          ? [entry.image]
+          : [];
+      return [id, { images, updatedAt: entry?.updatedAt || "" }];
+    }));
   } catch (_) {
     return {};
   }
@@ -3588,7 +3598,8 @@ function renderConceptImages() {
     const card = document.querySelector(`[data-concept-id="${concept.id}"]`);
     const button = card?.querySelector(".concept-image-button");
     const image = button?.querySelector("img");
-    const source = items[concept.id]?.image || "";
+    const album = items[concept.id]?.images || [];
+    const source = album[0] || "";
 
     if (!button || !image) return;
 
@@ -3596,6 +3607,15 @@ function renderConceptImages() {
       image.src = source;
       button.dataset.image = source;
       button.hidden = false;
+      let badge = button.querySelector(".concept-album-count");
+      if (!badge) {
+        badge = document.createElement("b");
+        badge.className = "concept-album-count";
+        button.appendChild(badge);
+      }
+      badge.textContent = `${album.length} ảnh`;
+      const action = button.querySelector("i");
+      if (action) action.textContent = "Xem ảnh ↗";
     } else {
       image.removeAttribute("src");
       delete button.dataset.image;
@@ -3606,52 +3626,59 @@ function renderConceptImages() {
 
 function renderConceptDetailImage() {
   const conceptId = document.body.dataset.conceptPage;
-  const image = document.getElementById("conceptDetailImage");
+  const gallery = document.getElementById("conceptDetailGallery");
   const placeholder = document.getElementById("conceptDetailPlaceholder");
-  const zoom = document.getElementById("conceptDetailZoom");
-  if (!conceptId || !image || !placeholder || !zoom) return;
+  const count = document.getElementById("conceptAlbumCount");
+  if (!conceptId || !gallery || !placeholder) return;
 
-  const source = getConceptImages()[conceptId]?.image || "";
-  if (!source) {
-    image.hidden = true;
+  const concept = CONCEPT_CATALOG.find(item => item.id === conceptId);
+  const album = getConceptImages()[conceptId]?.images || [];
+  gallery.innerHTML = album.map((source, index) => `
+    <button type="button" class="concept-album-item${index === 0 ? " featured" : ""}" data-image="${escapeHTML(source)}" aria-label="Xem ảnh ${index + 1} trong album ${escapeHTML(concept?.title || "concept")}">
+      <img src="${escapeHTML(source)}" alt="${escapeHTML(concept?.title || "Concept")} — ảnh ${index + 1}" loading="lazy">
+      <span>${String(index + 1).padStart(2, "0")}</span>
+    </button>`).join("");
+
+  if (count) count.textContent = album.length ? `${album.length} hình ảnh` : "Album đang cập nhật";
+  if (!album.length) {
+    gallery.hidden = true;
     placeholder.hidden = false;
-    zoom.hidden = true;
     return;
   }
 
-  image.src = source;
-  image.hidden = false;
+  gallery.hidden = false;
   placeholder.hidden = true;
-  zoom.hidden = false;
-  zoom.dataset.image = source;
 }
 
 function renderAdminConcepts() {
   const list = document.getElementById("conceptAdminList");
   const count = document.getElementById("conceptImageCount");
+  const photoCount = document.getElementById("conceptPhotoCount");
   if (!list) return;
 
   const items = getConceptImages();
   if (count) {
-    count.textContent = CONCEPT_CATALOG.filter(concept => items[concept.id]?.image).length;
+    count.textContent = CONCEPT_CATALOG.filter(concept => items[concept.id]?.images?.length).length;
   }
+  if (photoCount) photoCount.textContent = CONCEPT_CATALOG.reduce((sum, concept) => sum + (items[concept.id]?.images?.length || 0), 0);
 
   list.innerHTML = CONCEPT_CATALOG.map(concept => {
-    const source = items[concept.id]?.image || "";
+    const album = items[concept.id]?.images || [];
+    const source = album[0] || "";
     const thumbnail = source
-      ? `<img src="${escapeHTML(source)}" alt="Ảnh ${escapeHTML(concept.title)}">`
-      : "<span>Chưa có ảnh</span>";
+      ? `<img src="${escapeHTML(source)}" alt="Ảnh bìa ${escapeHTML(concept.title)}"><b>${album.length}</b>`
+      : "<span>Chưa có album</span>";
     const remove = source
-      ? `<button type="button" class="danger" data-concept-remove="${concept.id}">Xóa ảnh</button>`
+      ? `<button type="button" class="danger" data-concept-remove="${concept.id}">Xóa album</button>`
       : "";
 
     return `<div class="concept-admin-row">
       <div class="concept-admin-thumb">${thumbnail}</div>
       <div class="concept-admin-copy">
         <h4>${escapeHTML(concept.title)}</h4>
-        <p>${escapeHTML(concept.label)}</p>
+        <p>${escapeHTML(concept.label)} · ${album.length} ảnh</p>
         <div class="admin-row-actions">
-          <button type="button" data-concept-edit="${concept.id}">${source ? "Thay ảnh" : "Đăng ảnh"}</button>
+          <button type="button" data-concept-edit="${concept.id}">${source ? "Quản lý album" : "Tạo album"}</button>
           ${remove}
         </div>
       </div>
@@ -3659,20 +3686,23 @@ function renderAdminConcepts() {
   }).join("");
 }
 
-let pendingConceptImage = "";
+let pendingConceptImages = [];
 
-function showConceptPreview(source) {
-  const box = document.getElementById("conceptImagePreview");
-  const image = document.getElementById("conceptPreviewImg");
-  if (!box || !image) return;
-
-  if (!source) {
+function showConceptPreview() {
+  const box = document.getElementById("conceptAlbumPreview");
+  if (!box) return;
+  if (!pendingConceptImages.length) {
     box.hidden = true;
-    image.removeAttribute("src");
+    box.innerHTML = "";
     return;
   }
 
-  image.src = source;
+  box.innerHTML = pendingConceptImages.map((source, index) => `
+    <figure>
+      <img src="${escapeHTML(source)}" alt="Ảnh ${index + 1} trong album">
+      <figcaption>${String(index + 1).padStart(2, "0")}</figcaption>
+      <button type="button" data-concept-preview-remove="${index}" aria-label="Loại ảnh ${index + 1} khỏi album">×</button>
+    </figure>`).join("");
   box.hidden = false;
 }
 
@@ -3680,8 +3710,8 @@ function closeConceptEditor() {
   const form = document.getElementById("conceptAdminForm");
   form?.reset();
   if (form) form.hidden = true;
-  pendingConceptImage = "";
-  showConceptPreview("");
+  pendingConceptImages = [];
+  showConceptPreview();
   const note = document.getElementById("conceptAdminNote");
   if (note) note.textContent = "";
 }
@@ -3691,13 +3721,13 @@ function openConceptEditor(conceptId) {
   const form = document.getElementById("conceptAdminForm");
   if (!concept || !form) return;
 
-  const current = getConceptImages()[conceptId]?.image || "";
+  const current = getConceptImages()[conceptId]?.images || [];
   document.getElementById("conceptEditId").value = conceptId;
   document.getElementById("conceptEditTitle").textContent = concept.title;
-  document.getElementById("conceptImageUrl").value = current.startsWith("http") ? current : "";
+  document.getElementById("conceptImageUrls").value = "";
   document.getElementById("conceptImageFile").value = "";
-  pendingConceptImage = current;
-  showConceptPreview(current);
+  pendingConceptImages = [...current];
+  showConceptPreview();
   form.hidden = false;
   form.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -3720,8 +3750,8 @@ function optimizeConceptImage(file) {
       const sourceImage = new Image();
       sourceImage.onerror = () => reject(new Error("File ảnh không hợp lệ."));
       sourceImage.onload = () => {
-        const maxWidth = 1400;
-        const maxHeight = 1400;
+        const maxWidth = 1000;
+        const maxHeight = 1000;
         const ratio = Math.min(1, maxWidth / sourceImage.width, maxHeight / sourceImage.height);
         const width = Math.max(1, Math.round(sourceImage.width * ratio));
         const height = Math.max(1, Math.round(sourceImage.height * ratio));
@@ -3730,7 +3760,7 @@ function optimizeConceptImage(file) {
         canvas.height = height;
         const context = canvas.getContext("2d");
         context.drawImage(sourceImage, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", .82));
+        resolve(canvas.toDataURL("image/jpeg", .74));
       };
       sourceImage.src = reader.result;
     };
@@ -3746,7 +3776,7 @@ document.getElementById("conceptAdminList")?.addEventListener("click", event => 
     openConceptEditor(edit.dataset.conceptEdit);
   }
 
-  if (remove && confirm("Xóa ảnh đang hiển thị ở concept này?")) {
+  if (remove && confirm("Xóa toàn bộ album ảnh của concept này?")) {
     const items = getConceptImages();
     delete items[remove.dataset.conceptRemove];
     saveConceptImages(items);
@@ -3758,30 +3788,35 @@ document.getElementById("conceptAdminList")?.addEventListener("click", event => 
 });
 
 document.getElementById("conceptImageFile")?.addEventListener("change", async event => {
-  const file = event.target.files?.[0];
+  const files = [...(event.target.files || [])];
   const note = document.getElementById("conceptAdminNote");
-  if (!file) return;
+  if (!files.length) return;
+  if (pendingConceptImages.length + files.length > MAX_CONCEPT_PHOTOS) {
+    if (note) note.textContent = `Mỗi album tối đa ${MAX_CONCEPT_PHOTOS} ảnh.`;
+    event.target.value = "";
+    return;
+  }
 
-  if (note) note.textContent = "Đang tối ưu ảnh...";
+  if (note) note.textContent = `Đang tối ưu ${files.length} ảnh...`;
   try {
-    pendingConceptImage = await optimizeConceptImage(file);
-    document.getElementById("conceptImageUrl").value = "";
-    showConceptPreview(pendingConceptImage);
-    if (note) note.textContent = "Ảnh đã sẵn sàng để lưu.";
+    const optimized = [];
+    for (const file of files) optimized.push(await optimizeConceptImage(file));
+    pendingConceptImages.push(...optimized);
+    showConceptPreview();
+    if (note) note.textContent = `${pendingConceptImages.length} ảnh đã sẵn sàng để lưu.`;
   } catch (error) {
-    pendingConceptImage = "";
-    showConceptPreview("");
     if (note) note.textContent = error.message;
   }
+  event.target.value = "";
 });
 
-document.getElementById("conceptImageUrl")?.addEventListener("input", event => {
-  const value = event.target.value.trim();
-  if (value) {
-    pendingConceptImage = value;
-    document.getElementById("conceptImageFile").value = "";
-    showConceptPreview(value);
-  }
+document.getElementById("conceptAlbumPreview")?.addEventListener("click", event => {
+  const remove = event.target.closest("[data-concept-preview-remove]");
+  if (!remove) return;
+  pendingConceptImages.splice(Number(remove.dataset.conceptPreviewRemove), 1);
+  showConceptPreview();
+  const note = document.getElementById("conceptAdminNote");
+  if (note) note.textContent = `${pendingConceptImages.length} ảnh trong album.`;
 });
 
 document.getElementById("cancelConceptBtn")?.addEventListener("click", closeConceptEditor);
@@ -3789,18 +3824,39 @@ document.getElementById("cancelConceptBtn")?.addEventListener("click", closeConc
 document.getElementById("conceptAdminForm")?.addEventListener("submit", event => {
   event.preventDefault();
   const conceptId = document.getElementById("conceptEditId").value;
-  const url = document.getElementById("conceptImageUrl").value.trim();
-  const source = url || pendingConceptImage;
+  const urls = document.getElementById("conceptImageUrls").value
+    .split(/\n+/)
+    .map(value => value.trim())
+    .filter(Boolean);
   const note = document.getElementById("conceptAdminNote");
+  const invalidUrl = urls.find(value => {
+    try {
+      const parsed = new URL(value);
+      return !["http:", "https:"].includes(parsed.protocol);
+    } catch (_) {
+      return true;
+    }
+  });
 
-  if (!conceptId || !source) {
-    if (note) note.textContent = "Vui lòng chọn một file ảnh hoặc nhập URL hình ảnh.";
+  if (invalidUrl) {
+    if (note) note.textContent = `URL không hợp lệ: ${invalidUrl}`;
+    return;
+  }
+
+  const album = [...new Set([...pendingConceptImages, ...urls])];
+
+  if (!conceptId || !album.length) {
+    if (note) note.textContent = "Vui lòng chọn ít nhất một ảnh hoặc nhập URL hình ảnh.";
+    return;
+  }
+  if (album.length > MAX_CONCEPT_PHOTOS) {
+    if (note) note.textContent = `Mỗi album tối đa ${MAX_CONCEPT_PHOTOS} ảnh.`;
     return;
   }
 
   try {
     const items = getConceptImages();
-    items[conceptId] = { image: source, updatedAt: new Date().toISOString() };
+    items[conceptId] = { images: album, updatedAt: new Date().toISOString() };
     saveConceptImages(items);
     renderConceptImages();
     renderConceptDetailImage();
@@ -3818,9 +3874,9 @@ document.querySelector(".concept-grid")?.addEventListener("click", event => {
   }
 });
 
-document.getElementById("conceptDetailZoom")?.addEventListener("click", event => {
-  const source = event.currentTarget.dataset.image;
-  if (source) openImageModal(source);
+document.getElementById("conceptDetailGallery")?.addEventListener("click", event => {
+  const button = event.target.closest("[data-image]");
+  if (button?.dataset.image) openImageModal(button.dataset.image);
 });
 
 renderConceptImages();

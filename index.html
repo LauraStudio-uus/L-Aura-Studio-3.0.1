@@ -611,20 +611,20 @@
 
         <div class="admin-tab-content" id="adminConceptsTab">
           <div class="admin-section-head">
-            <div><p class="eyebrow">SIGNATURE CONCEPTS CMS</p><h3>Ảnh 6 concept nổi bật</h3><p>Chọn ảnh từ máy hoặc nhập URL. Ảnh tải từ máy sẽ được thu nhỏ trước khi lưu trên trình duyệt.</p></div>
+            <div><p class="eyebrow">SIGNATURE CONCEPTS CMS</p><h3>Album 6 concept nổi bật</h3><p>Đăng nhiều ảnh cho từng concept từ máy hoặc bằng URL. Ảnh tải từ máy sẽ được tối ưu trước khi lưu.</p></div>
           </div>
-          <div class="admin-stats"><div><span id="conceptImageCount">0</span><small>Concept có ảnh</small></div><div><span>6</span><small>Tổng concept</small></div></div>
+          <div class="admin-stats"><div><span id="conceptImageCount">0</span><small>Concept có album</small></div><div><span id="conceptPhotoCount">0</span><small>Tổng ảnh</small></div><div><span>6</span><small>Tổng concept</small></div></div>
           <div id="conceptAdminList" class="concept-admin-list"></div>
           <form id="conceptAdminForm" class="post-form concept-admin-form" hidden>
             <input type="hidden" id="conceptEditId">
-            <div><p class="eyebrow">CẬP NHẬT ẢNH</p><h3 id="conceptEditTitle">Concept</h3></div>
-            <label>Chọn ảnh từ máy<input type="file" id="conceptImageFile" accept="image/jpeg,image/png,image/webp,image/avif"></label>
+            <div><p class="eyebrow">CẬP NHẬT ALBUM</p><h3 id="conceptEditTitle">Concept</h3></div>
+            <label>Chọn nhiều ảnh từ máy<input type="file" id="conceptImageFile" accept="image/jpeg,image/png,image/webp,image/avif" multiple></label>
             <div class="concept-source-divider"><span>hoặc</span></div>
-            <label>URL hình ảnh<input type="url" id="conceptImageUrl" placeholder="https://...jpg"></label>
-            <p class="concept-admin-help">Khuyến nghị ảnh dọc hoặc vuông, tối đa 12 MB. Ảnh từ máy được nén về kích thước phù hợp website.</p>
-            <div id="conceptImagePreview" class="portfolio-image-preview" hidden><img id="conceptPreviewImg" alt="Xem trước ảnh concept"></div>
+            <label>URL hình ảnh<textarea id="conceptImageUrls" rows="4" placeholder="Mỗi URL ảnh trên một dòng"></textarea></label>
+            <p class="concept-admin-help">Tối đa 20 ảnh/concept và 12 MB/ảnh. Bạn có thể bổ sung ảnh nhiều lần; bấm dấu × trên ảnh xem trước để loại ảnh khỏi album.</p>
+            <div id="conceptAlbumPreview" class="concept-album-preview" hidden></div>
             <p id="conceptAdminNote" class="form-note" role="status"></p>
-            <div class="post-form-actions"><button type="submit" class="btn btn-dark">Lưu ảnh concept ↗</button><button type="button" class="admin-secondary" id="cancelConceptBtn">Hủy</button></div>
+            <div class="post-form-actions"><button type="submit" class="btn btn-dark">Lưu album concept ↗</button><button type="button" class="admin-secondary" id="cancelConceptBtn">Hủy</button></div>
           </form>
         </div>
 
