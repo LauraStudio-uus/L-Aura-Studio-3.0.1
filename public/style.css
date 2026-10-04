@@ -731,6 +731,12 @@ html[data-theme="dark"] .header .brand-logo img{filter:none}
 .concept-image-button{position:relative;width:calc(100% + 64px);margin:-32px -32px 26px;border:0;background:#d8d0c2;aspect-ratio:4/3;overflow:hidden;cursor:zoom-in;color:#fff;text-align:left}
 .concept-image-button[hidden]{display:none}
 .concept-image-button img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .55s ease,filter .35s ease}
+.concept-home-album{display:grid;width:100%;height:100%;gap:2px;background:#f7f3eb}
+.concept-home-album-1{grid-template-columns:1fr}
+.concept-home-album-2{grid-template-columns:repeat(2,1fr)}
+.concept-home-album-3{grid-template-columns:1.35fr .65fr;grid-template-rows:repeat(2,1fr)}
+.concept-home-album-3 img:first-child{grid-row:1/3}
+.concept-home-album img{min-width:0;min-height:0}
 .concept-image-button i{position:absolute;right:12px;bottom:12px;padding:7px 9px;background:rgba(13,13,12,.72);font-style:normal;font-size:9px;letter-spacing:1px;text-transform:uppercase}
 .concept-album-count{position:absolute;left:12px;top:12px;padding:7px 9px;background:rgba(247,243,235,.9);color:#29251f;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .concept-image-button:hover img{transform:scale(1.035);filter:saturate(1.08)}

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: laura-studio
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run db:init
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: laura-studio-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "true"
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+    disk:
+      name: laura-studio-uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 2
+
+databases:
+  - name: laura-studio-db
+    plan: basic-256mb

@@ -3597,27 +3597,17 @@ function renderConceptImages() {
   CONCEPT_CATALOG.forEach(concept => {
     const card = document.querySelector(`[data-concept-id="${concept.id}"]`);
     const button = card?.querySelector(".concept-image-button");
-    const image = button?.querySelector("img");
     const album = items[concept.id]?.images || [];
     const source = album[0] || "";
 
-    if (!button || !image) return;
+    if (!button) return;
 
     if (source) {
-      image.src = source;
+      const preview = album.slice(0, 3);
+      button.innerHTML = `<span class="concept-home-album concept-home-album-${preview.length}">${preview.map((imageSource, index) => `<img src="${escapeHTML(imageSource)}" data-image="${escapeHTML(imageSource)}" alt="${escapeHTML(concept.title)} — ảnh ${index + 1}" loading="lazy">`).join("")}</span><b class="concept-album-count">${album.length} ảnh</b><i>Xem album ↗</i>`;
       button.dataset.image = source;
       button.hidden = false;
-      let badge = button.querySelector(".concept-album-count");
-      if (!badge) {
-        badge = document.createElement("b");
-        badge.className = "concept-album-count";
-        button.appendChild(badge);
-      }
-      badge.textContent = `${album.length} ảnh`;
-      const action = button.querySelector("i");
-      if (action) action.textContent = "Xem ảnh ↗";
     } else {
-      image.removeAttribute("src");
       delete button.dataset.image;
       button.hidden = true;
     }
@@ -3869,8 +3859,9 @@ document.getElementById("conceptAdminForm")?.addEventListener("submit", event =>
 
 document.querySelector(".concept-grid")?.addEventListener("click", event => {
   const button = event.target.closest(".concept-image-button");
+  const selectedImage = event.target.closest("[data-image]")?.dataset.image;
   if (button?.dataset.image) {
-    openImageModal(button.dataset.image);
+    openImageModal(selectedImage || button.dataset.image);
   }
 });
 

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Selected works và ngôn ngữ hình ảnh của L’AURA STUDIO.">
+  <meta name="description" content="Câu chuyện hậu trường và kiến thức nhiếp ảnh từ L’AURA STUDIO.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#f7f3eb">
-  <meta property="og:title" content="Portfolio | L’AURA STUDIO">
-  <meta property="og:description" content="Selected works và ngôn ngữ hình ảnh của L’AURA STUDIO.">
+  <meta property="og:title" content="Journal | L’AURA STUDIO">
+  <meta property="og:description" content="Câu chuyện hậu trường và kiến thức nhiếp ảnh từ L’AURA STUDIO.">
   <meta property="og:type" content="website">
-  <title>Portfolio | L’AURA STUDIO</title>
+  <title>Journal | L’AURA STUDIO</title>
   <link rel="icon" type="image/png" href="assets/laura-studio-mark.png">
   <link rel="apple-touch-icon" href="assets/laura-studio-mark.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,10 +23,10 @@
   <header class="header inner-header" id="header">
     <a href="index.html" class="logo brand-logo" aria-label="L’AURA STUDIO — Trang chủ"><img src="assets/laura-studio-logo.png" alt="L’AURA STUDIO" width="360" height="120"></a>
     <nav class="nav" id="nav" aria-label="Điều hướng chính">
-      <a href="studio.html">Studio</a>
+      <a href="studio.html" aria-current="page">Studio</a>
       <a href="services.html">Dịch vụ</a>
       <a href="experience.html">Trải nghiệm</a>
-      <a href="portfolio.html" aria-current="page">Portfolio</a>
+      <a href="portfolio.html">Portfolio</a>
       <a href="pricing.html">Bảng giá</a>
       <a href="contact.html">Liên hệ</a>
     </nav>
@@ -38,17 +38,17 @@
   </header>
   <main id="main">
     <section class="inner-hero">
-      <div class="inner-breadcrumb"><a href="index.html">Home</a><span>/</span><span>Portfolio</span></div>
-      <p class="eyebrow">SELECTED WORKS</p>
-      <h1>Our visual<br><em>language.</em></h1>
-      <p class="inner-hero-copy">Những hình ảnh đại diện cho cách L’AURA nhìn thế giới: thời trang, điện ảnh và giàu cảm xúc.</p>
+      <div class="inner-breadcrumb"><a href="index.html">Home</a><span>/</span><span>Journal</span></div>
+      <p class="eyebrow">L’AURA JOURNAL</p>
+      <h1>Stories &<br><em>knowledge.</em></h1>
+      <p class="inner-hero-copy">Hậu trường, lighting, creative direction và những góc nhìn từ studio.</p>
     </section>
-    <section class="inner-section portfolio" id="portfolio"><div class="gallery"><button class="gallery-card large" data-image="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=85"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=85" alt="Portrait"><span>Portrait / 01</span></button><button class="gallery-card" data-image="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85" alt="Fashion"><span>Fashion / 02</span></button><button class="gallery-card tall" data-image="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=85"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=85" alt="Editorial"><span>Editorial / 03</span></button><button class="gallery-card" data-image="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85" alt="Beauty"><span>Beauty / 04</span></button><button class="gallery-card wide" data-image="https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=1400&q=85"><img src="https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=1400&q=85" alt="Lifestyle"><span>Portrait / 05</span></button></div></section>
+    <section class="inner-section blog" id="blog"><div class="blog-toolbar"><p>Nội dung được cập nhật từ CMS.</p><div class="blog-filters"><button class="filter-btn active" data-category="all">Tất cả</button><button class="filter-btn" data-category="Photography">Photography</button><button class="filter-btn" data-category="Behind the scenes">Behind the scenes</button><button class="filter-btn" data-category="Studio">Studio</button></div></div><div class="blog-grid" id="blogGrid"></div><div class="blog-empty" id="blogEmpty" hidden>Chưa có bài viết.</div></section>
   </main>
   <footer class="inner-footer"><div class="logo footer-brand"><img src="assets/laura-studio-logo.png" alt="L’AURA STUDIO" width="360" height="120"></div><p>© <span id="year"></span> L’AURA STUDIO.</p><a href="index.html">Về trang chủ ↑</a></footer>
   <div class="modal" id="imageModal"><button class="modal-close" id="modalClose" type="button" aria-label="Đóng">×</button><img id="modalImage" src="" alt="Xem ảnh lớn"></div>
   <div class="article-modal" id="articleModal"><button class="article-close" id="articleClose" type="button">×</button><article class="article-reader"><img id="articleImage" src="" alt=""><div class="article-reader-body"><p class="eyebrow" id="articleCategory"></p><h1 id="articleTitle"></h1><p class="article-date" id="articleDate"></p><div id="articleContent"></div><div id="commentLoginMessage" hidden></div><form id="commentForm" hidden><textarea id="commentText"></textarea><span id="commentUserName"></span></form><div id="commentList"></div></div></article></div>
-  <div class="video-modal" id="videoModal" aria-hidden="true"><button class="video-modal-close" id="videoModalClose" type="button">×</button><div class="video-modal-shell"><div class="video-player" id="videoPlayer"></div><div class="video-modal-copy"><p class="eyebrow" id="videoModalCategory"></p><h2 id="videoModalTitle"></h2><p id="videoModalDescription"></p></div></div></div>
   <script src="script.js"></script>
+  <script src="backend-sync.js"></script>
 </body>
 </html>
