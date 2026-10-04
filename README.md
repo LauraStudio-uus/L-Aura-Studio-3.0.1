@@ -10,11 +10,11 @@ Gói này gồm giao diện trong `public/`, Node.js API trong `server.js`, Post
 4. Chạy `npm run db:init` để tạo bảng và sáu concept.
 5. Chạy `npm start`, sau đó mở `http://localhost:3000`.
 
-## Đưa lên Render, Railway hoặc VPS
+## Đưa lên Render với database Supabase
 
-- Tạo PostgreSQL database và lấy `DATABASE_URL`.
+- Tạo Supabase project, chạy `database/schema.sql` trong SQL Editor và lấy Session pooler `DATABASE_URL` từ nút Connect.
 - Đặt các biến trong `.env.example` tại phần Environment Variables của dịch vụ hosting.
-- Build command: `npm install && npm run db:init`.
+- Build command: `npm install`.
 - Start command: `npm start`.
 - Gắn persistent disk vào thư mục `/uploads` để ảnh tải lên không mất khi máy chủ khởi động lại. Nếu nền tảng không có persistent disk, nên thay phần lưu file bằng Cloudinary hoặc Supabase Storage.
 - Bắt buộc đổi `ADMIN_EMAIL`, `ADMIN_PASSWORD` và `SESSION_SECRET` trước khi public website.
